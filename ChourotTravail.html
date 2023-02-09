@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="graphContainer" style="margin: auto"></div>
+  </body>
+
+  <script defer>
+    let mois = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+    let ventes = [6500, 5550, 4200, 4525, 2500, 1500, 500, 1000, 1750, 2300, 3700, 3500];
+
+    const svgns = "http://www.w3.org/2000/svg";
+    let viewPortMaxUnitX = 1000;
+    let viewPortMaxUnitY = 1000;
+    let viewport = null;
+    init_UI();
+    function init_UI() {
+      insertViewPort("graphContainer");
+      demoShapes();
+    }
+    function insertViewPort(containerId) {
+      viewport = document.createElementNS(svgns, "svg");
+      viewport.setAttribute("id", "viewport");
+      viewport.setAttribute(
+        "viewBox",
+        "-30 -300 " + viewPortMaxUnitX + " " + viewPortMaxUnitY
+      );
+      document.getElementById(containerId).appendChild(viewport);
+    }
+    function demoShapes() {
+      let countLine = 0;
+      while(countLine <= 70)
+        {
+          if(countLine % 10 == 0)
+          {
+            viewport.appendChild(line(0,-countLine * 4, 10 *24, -countLine * 4, "black", 1));
+            viewport.appendChild(text(-17, -countLine * 4, (1000 * countLine / 10).toString() + "$", 0, "0.4", "black"));
+            //                        x,      y           content                               ang, size, color
+          }
+          else
+            viewport.appendChild(line(0,-countLine * 4, 10 *24, -countLine * 4, "grey", 1));
+
+          ++countLine;
+        }
+
+      let count = 0;
+      let color = "green";
+      mois.forEach(elem => {
+        if(ventes[count] <= 1000)
+          color = "red";
+        else if((ventes[count] <= 3000))
+          color = "orange";
+        else if((ventes[count] <= 4500))
+          color = "yellow";
+        else
+          color = "green";
+        viewport.appendChild(line(((20 * count + 1) + 10), 0, (20 * count + 1) + 10, -ventes[count] / 25, color, 10));
+        viewport.appendChild(text((20 * count) + 5, -ventes[count] / 25 - 3, ventes[count].toString() + "$",0, "0.4", "black"));
+        viewport.appendChild(text((20 * count + 1) + 10, 6, mois[count].toString(),25, "0.5", "black"));
+        //console.log(ventes[count].toString());
+        ++count;
+      });
+
+      
+    }
+    function text(x, y, content, angle = 0, size = "1", fill = "black") {
+        let text = document.createElementNS(svgns, "text");
+        text.setAttribute("x", x);
+        text.setAttribute("y", y);
+        text.setAttribute("transform", `rotate(${angle},${x},${y})`);
+        text.setAttribute("font-size", size + "em");
+        text.setAttribute("fill", fill);
+        text.innerHTML = content;
+        return text;
+      };
+    function line(x1, y1, x2, y2, stroke = "black", strokeWidth = 1) {
+      let line = document.createElementNS(svgns, "line");
+      line.setAttribute("x1", x1);
+      line.setAttribute("y1", y1);
+      line.setAttribute("x2", x2);
+      line.setAttribute("y2", y2);
+      line.setAttribute("stroke", stroke);
+      line.setAttribute("stroke-width", strokeWidth);
+      return line;
+    }
+
+    
+  </script>
+</html>
